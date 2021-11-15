@@ -8,8 +8,7 @@ namespace KingsWalletAPI.Service.Interfaces
 {
     public interface IUserService
     {
-        public void Register();
-        public void Login();
+        public void Register();        
         public void DeactivateUser();
     }
 }

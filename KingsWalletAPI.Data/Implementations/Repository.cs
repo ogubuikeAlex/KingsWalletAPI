@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using KingsWalletAPI.Data.Interfaces;
+using KingsWalletAPI.Model.Entites;
+using Microsoft.EntityFrameworkCore;
 
 namespace KingsWalletAPI.Data.Implementations
 {
-    public class Repository<T> : IRepository<T> where T : class, ISoftDelete
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<T> _dbSet;
-
-        // predicate to help us filter and select entities where is their IsDeleted property is false
-        private Expression<Func<T, bool>> softDeletePredicate = e => !e.IsDeleted;
-
 
         public Repository(DbContext context)
         {
@@ -39,7 +38,7 @@ namespace KingsWalletAPI.Data.Implementations
 
         public IQueryable<T> GetAllWithInclude(string incPpt)
         {
-            return _dbContext.Set<T>().Where(softDeletePredicate).Include(incPpt);
+            return _dbContext.Set<T>().Include(incPpt);
         }
 
         public async Task<T> AddAsync(T obj)
@@ -53,22 +52,22 @@ namespace KingsWalletAPI.Data.Implementations
         public IEnumerable<T> GetAllWithoutDeletedEntities()
         {
             // return only none deleted items
-            return _dbSet.Where(softDeletePredicate).ToList();
+            return _dbSet.ToList();
         }
 
         public async Task<IEnumerable<T>> GetAllWithoutDeletedEntitiesAsync()
         {
 
-            return await _dbSet.Where(softDeletePredicate).ToListAsync();
+            return await _dbSet.ToListAsync();
 
         }
 
         public IEnumerable<T> GetByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, int? skip = null, int? take = null, params string[] includeProperties)
         {
             if (predicate is null)
-                return _dbSet.Where(softDeletePredicate).ToList();
+                return _dbSet.ToList();
 
-            return _dbSet.Where(softDeletePredicate)
+            return _dbSet
                 .Where(predicate)
                 .ToList();
         }
@@ -93,11 +92,11 @@ namespace KingsWalletAPI.Data.Implementations
         public T GetSingleByCondition(Expression<Func<T, bool>> predicate = null, Func<IQueryable, IOrderedQueryable> orderby = null, params string[] includeProperties)
         {
             if (predicate is null)
-                return _dbSet.Where(softDeletePredicate)
+                return _dbSet
                     .ToList()
                     .FirstOrDefault();
 
-            return _dbSet.Where(softDeletePredicate)
+            return _dbSet
                 .Where(predicate)
                 .FirstOrDefault();
         }
@@ -105,23 +104,23 @@ namespace KingsWalletAPI.Data.Implementations
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate = null)
         {
             if (predicate is null)
-                return await _dbSet.Where(softDeletePredicate)
+                return await _dbSet
                     .AnyAsync();
 
-            return await _dbSet.Where(softDeletePredicate)
+            return await _dbSet
                 .AnyAsync(predicate);
         }
 
         public bool Any(Expression<Func<T, bool>> predicate = null)
         {
             if (predicate is null)
-                return _dbSet.Where(softDeletePredicate).Any();
+                return _dbSet.Any();
 
-            return _dbSet.Where(softDeletePredicate)
+            return _dbSet
                 .Any(predicate);
         }
 
-        public ReturnModel SoftDelete(Guid Id)
+       /* public ReturnModel SoftDelete(Guid Id)
         {
             var entity = _dbSet.Find(Id);
 
@@ -136,7 +135,7 @@ namespace KingsWalletAPI.Data.Implementations
             _dbContext.Entry(entity).State = EntityState.Modified;
 
             return new ReturnModel { Success = true, Message = "Delete Successful" };
-        }
+        }*/
 
         public async Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> obj)
         {
@@ -145,16 +144,8 @@ namespace KingsWalletAPI.Data.Implementations
             await _dbContext.SaveChangesAsync();
 
             return obj;
-        }
+        }      
 
-        public async Task<IEnumerable<T>> GetAllIncludingDeletedEntities()
-        {
-            return await _dbSet.ToListAsync();
-        }
-
-        public async Task<IEnumerable<T>> GetOnlyDeletedEntities()
-        {
-            return await _dbSet.Where(e => e.IsDeleted).ToListAsync();
-        }
+        
     }
 }

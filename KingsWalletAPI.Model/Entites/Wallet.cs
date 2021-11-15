@@ -10,6 +10,6 @@ namespace KingsWalletAPI.Model.Entites
     {
         public Guid Id { get; set; }
         public decimal Balance { get; set; }       
-        public string WalletId { get; set } 
+        public string WalletId { get; set; } 
     }
 }

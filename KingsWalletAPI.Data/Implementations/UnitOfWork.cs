@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using KingsWalletAPI.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace KingsWalletAPI.Data.Implementations
 {
@@ -15,7 +16,7 @@ namespace KingsWalletAPI.Data.Implementations
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, ISoftDelete
+        public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
         {
             if (_repositories == null) _repositories = new Dictionary<Type, object>();
 

@@ -8,7 +8,7 @@ namespace KingsWalletAPI.Data.Interfaces
 {
     public interface IUnitOfWork
     {
-        IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, ISoftDelete;
+        IRepository<TEntity> GetRepository<TEntity>() where TEntity : class;
         int SaveChanges();
         Task<int> SaveChangesAsync();
     }

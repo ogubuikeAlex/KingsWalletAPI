@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using KingsWalletAPI.Data.Interfaces;
+using KingsWalletAPI.Model.DataTransferObjects.UserControllerDTO;
+using KingsWalletAPI.Model.Entites;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace KingsWalletAPI.Data.Implementations
 {
@@ -20,7 +27,7 @@ namespace KingsWalletAPI.Data.Implementations
             _configuration = configuration;
         }
 
-        public async Task<bool> ValidateUser(UserLoginDTO userForAuth)
+        public async Task<bool> ValidateUser(LoginDTO userForAuth)
         {
             _user = await _userManager.FindByNameAsync(userForAuth.Email);
             return (_user != null && await _userManager.CheckPasswordAsync(_user, userForAuth.Password));
