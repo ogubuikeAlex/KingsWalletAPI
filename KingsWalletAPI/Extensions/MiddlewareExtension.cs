@@ -44,9 +44,10 @@ namespace KingsWalletAPI.Extensions
            
             services.AddTransient<IServiceFactory, ServiceFactory>();
             services.AddTransient<DbContext, KingsWalletContext>();
-            services.AddTransient<IUserService, UserService>();
+          //  services.AddTransient<IUserService, UserService>();
             services.AddTransient<IWalletService, WalletService>();           
             services.AddTransient<IUnitOfWork, UnitofWork<KingsWalletContext>>();
+            services.AddScoped<IAuthentication, AuthenticationManager>();                      
             services.AddScoped<IAuthentication, AuthenticationManager>();                      
         }
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)

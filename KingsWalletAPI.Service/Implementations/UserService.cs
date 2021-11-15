@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using AutoMapper;
 using KingsWalletAPI.Data.Implementations;
+using KingsWalletAPI.Data.Interfaces;
 using KingsWalletAPI.Model.DataTransferObjects.UserControllerDTO;
 using KingsWalletAPI.Model.Entites;
 using KingsWalletAPI.Service.Interfaces;
@@ -11,13 +12,13 @@ namespace KingsWalletAPI.Service.Implementations
     public class UserService : IUserService
     {
         private IMapper _mapper;
-        private readonly Repository<User> _userRepo;
+       // private readonly IRepository<User> _userRepo;
         private readonly UserManager<User> _userManager;
 
-        public UserService(IMapper mapper, Repository<User> userRepo, UserManager<User> userManager)
+        public UserService(IMapper mapper, IRepository<User> userRepo, UserManager<User> userManager)
         {
             _mapper = mapper;
-            _userRepo = userRepo;
+            //_userRepo = userRepo;
             _userManager = userManager;
         }
         public void DeactivateUser()

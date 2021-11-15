@@ -32,7 +32,7 @@ namespace KingsWalletAPI
             services.AddControllers();
             services.RegisterServices(Configuration);
             
-            //services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(MappingProfile));
             services.ConfigureJWT(Configuration);
             services.AddSwaggerGen(c =>
             {
@@ -53,7 +53,7 @@ namespace KingsWalletAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
