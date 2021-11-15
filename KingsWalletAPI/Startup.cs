@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using KingsWalletAPI.Extensions;
+using KingsWalletAPI.Model.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,6 +30,10 @@ namespace KingsWalletAPI
         {
 
             services.AddControllers();
+            services.RegisterServices(Configuration);
+            
+            //services.AddAutoMapper(typeof(MappingProfile));
+            services.ConfigureJWT(Configuration);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "KingsWalletAPI", Version = "v1" });
