@@ -73,8 +73,6 @@ namespace KingsWalletAPI.Service.Implementations
                 return (false, "Role Add failed", null); //delete created user!
             }
             return (true, "User Created", userEntity.Id);
-
-
         }
     }
 }

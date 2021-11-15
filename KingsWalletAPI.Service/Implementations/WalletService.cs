@@ -2,7 +2,7 @@
 
 namespace KingsWalletAPI.Service.Implementations
 {
-    class WalletService : IWalletService
+    public class WalletService : IWalletService
     {
         public void FundAccount()
         {
