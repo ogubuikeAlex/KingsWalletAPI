@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using AutoMapper;
 using KingsWalletAPI.Data.Implementations;
 using KingsWalletAPI.Data.Interfaces;
 using KingsWalletAPI.Model.DataTransferObjects.UserControllerDTO;
 using KingsWalletAPI.Model.Entites;
+using KingsWalletAPI.Model.Enums;
+using KingsWalletAPI.Model.Helpers;
 using KingsWalletAPI.Service.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
@@ -12,53 +15,53 @@ namespace KingsWalletAPI.Service.Implementations
     public class UserService : IUserService
     {
         private IMapper _mapper;
-       // private readonly IRepository<User> _userRepo;
+        private readonly IRepository<Wallet> _walletRepo;        
         private readonly UserManager<User> _userManager;
 
-        public UserService(IMapper mapper, IRepository<User> userRepo, UserManager<User> userManager)
+        public UserService(IUnitOfWork unitOfwork, IMapper mapper, UserManager<User> userManager)
         {
             _mapper = mapper;
-            //_userRepo = userRepo;
+            _walletRepo = unitOfwork.GetRepository<Wallet>();
             _userManager = userManager;
         }
-        public void DeactivateUser()
+        public async Task<ReturnModel> DeactivateUser(string userId)
         {
-            throw new System.NotImplementedException();
-        }
+            var user = await _userManager.FindByIdAsync(userId);
 
-        public void Login()
-        {
-            throw new System.NotImplementedException();
-        }
+            user.IsActive = false;
 
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+                return new ReturnModel(false, "User not deactivated");
+
+            return new ReturnModel(false, "User Deactivated Successfully");
+        }       
 
         public async Task<ReturnModel> Register(RegisterDTO model)
         {
-            //should a person get a token immediately after registering or they will need to login!! 
-            var (success, message, Id) = await CreateUserAsync(model, "User");
+            var createUserResult = await CreateUserAsync(model);
 
-            if (!success)
-                return new ReturnModel(false, "User not created");
+            if (!createUserResult.Success)
+                return new ReturnModel(false, createUserResult.Message);
 
-            var wallet = new Wallet { WalletId = RandomGenerator.GenerateWalletId() };
+            var wallet = new Wallet {
+                WalletId = RandomGenerator.GenerateWalletId(),
+                UserId = Guid.Parse(createUserResult.Object.ToString())
+            };
 
-            /*var result = await _libraryUserRepo.AddAsync(libraryUser);*/
+            var result = await _walletRepo.AddAsync(wallet);
 
-            /*if (result is null)
+            if (result is null)
             {
-                //await deleteUser(model.Email);
+                await deleteUser(model.Email);
                 return new ReturnModel(false, "Internal Db error, registration failed");
-            }*/
+            }
 
             return new ReturnModel(true, "Registration successfully");
-        }
+        }   
 
-        public void Register()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        protected async Task<(bool success, string message, string userId)> CreateUserAsync(RegisterDTO model, string role)
+        protected async Task<ReturnModel> CreateUserAsync(RegisterDTO model)
         {
             var userEntity = _mapper.Map<User>(model);
             userEntity.UserName = model.Email;
@@ -66,14 +69,20 @@ namespace KingsWalletAPI.Service.Implementations
 
             await _userManager.UpdateAsync(userEntity);
             var createUserResult = await _userManager.CreateAsync(userEntity, model.Password);
-            if (!createUserResult.Succeeded) return (false, "Registration failed, User not created!!", null);
-            var addRoleResult = await _userManager.AddToRoleAsync(userEntity, role);
+            if (!createUserResult.Succeeded) return new ReturnModel(false, "Registration failed, User not created!!", null);
+            var addRoleResult = await _userManager.AddToRoleAsync(userEntity, Roles.User.ToString());
             if (!addRoleResult.Succeeded)
             {
-                //await deleteUser(model.Email);
-                return (false, "Role Add failed", null); //delete created user!
+                await deleteUser(model.Email);
+                return new ReturnModel(false, "Role Add failed", null); //delete created user!
             }
-            return (true, "User Created", userEntity.Id);
+            return new ReturnModel(true, "User Created", userEntity.Id);
+        }
+
+        protected async Task deleteUser(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            await _userManager.DeleteAsync(user);
         }
     }
 }
