@@ -44,7 +44,7 @@ namespace KingsWalletAPI.Extensions
            
             services.AddTransient<IServiceFactory, ServiceFactory>();
             services.AddTransient<DbContext, KingsWalletContext>();
-          //  services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IWalletService, WalletService>();           
             services.AddTransient<IUnitOfWork, UnitofWork<KingsWalletContext>>();
             services.AddScoped<IAuthentication, AuthenticationManager>();                      

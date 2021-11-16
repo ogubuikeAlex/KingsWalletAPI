@@ -49,7 +49,7 @@ namespace KingsWalletAPI.Data.Implementations
 
             return obj;
         }
-        public IEnumerable<T> GetAllWithoutDeletedEntities()
+        public IEnumerable<T> GetAll()
         {
             // return only none deleted items
             return _dbSet.ToList();
@@ -76,16 +76,14 @@ namespace KingsWalletAPI.Data.Implementations
         {
 
             var entity = _dbSet.Find(id);
-            // TODO : should we return null when object is deleted 
-            // if (entity.IsDeleted == true) return null;    
+            
             return entity;
         }
 
         public async Task<T> GetByIdAsync(object id)
         {
             var entity = await _dbSet.FindAsync(id);
-            // TODO : should we return null when object is deleted
-            // if (entity.IsDeleted == true) return null;
+           
             return entity;
         }
 
@@ -144,8 +142,7 @@ namespace KingsWalletAPI.Data.Implementations
             await _dbContext.SaveChangesAsync();
 
             return obj;
-        }      
+        }
 
-        
     }
 }
