@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using KingsWalletAPI.Model.DataTransferObjects.WalletControllerDTO;
+using KingsWalletAPI.Model.Entites;
+using KingsWalletAPI.Model.Helpers;
 
 namespace KingsWalletAPI.Service.Interfaces
 {
     public interface IWalletService
     {
-        public void Transfer();
-        public void FundAccount();
-        public void PayBills();
-        public void ViewTransactions();
+        Task<ReturnModel> Transfer(TransferDTO model);
+        Task<ReturnModel> FundAccount(FundAccountDTO model);
+        Task<ReturnModel> PayBills(PayBillDTO model);
+        ReturnModel ViewTransactions(Guid id);
+        IEnumerable<Transaction> ViewAllTransactions();
     }
 }
