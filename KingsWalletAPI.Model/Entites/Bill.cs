@@ -7,16 +7,14 @@ using KingsWalletAPI.Model.Enums;
 
 namespace KingsWalletAPI.Model.Entites
 {
-    public class Transaction
+    public class Bill
     {
         public Guid Id { get; set; }
-        public Guid UserId {get; set;}
+        public Guid UserId { get; set; }
+        public string WalletId { get; set; }
         public decimal Amount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public TransactionType TransactionType { get; set; }
-        public TransactionMode TransactionMode { get; set; }
-        public string ReceiverWalletId { get; set; }
-        public string SenderWalletId { get; set; }
+        public string BillType { get; set; }  
     }
 }
