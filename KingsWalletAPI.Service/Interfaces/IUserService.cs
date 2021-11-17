@@ -9,5 +9,6 @@ namespace KingsWalletAPI.Service.Interfaces
     {
         Task<ReturnModel> Register(RegisterDTO model);
         Task<ReturnModel> DeactivateUser(string userId);
+        Task<UserReturnDTO> GetUserAsync(string id);
     }
 }

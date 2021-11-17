@@ -10,7 +10,6 @@ namespace KingsWalletAPI.Model.Entites
     public class User : IdentityUser
     {
         public string FullName { get; set; }
-        public bool IsActive { get; set; }
-        public Guid WalletId { get; set; }
+        public bool IsActive { get; set; }       
     }
 }

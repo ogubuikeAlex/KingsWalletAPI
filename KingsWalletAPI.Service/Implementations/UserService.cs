@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AutoMapper;
-using KingsWalletAPI.Data.Implementations;
 using KingsWalletAPI.Data.Interfaces;
 using KingsWalletAPI.Model.DataTransferObjects.UserControllerDTO;
 using KingsWalletAPI.Model.Entites;
@@ -15,7 +14,7 @@ namespace KingsWalletAPI.Service.Implementations
     public class UserService : IUserService
     {
         private IMapper _mapper;
-        private readonly IRepository<Wallet> _walletRepo;        
+        private readonly IRepository<Wallet> _walletRepo;
         private readonly UserManager<User> _userManager;
 
         public UserService(IUnitOfWork unitOfwork, IMapper mapper, UserManager<User> userManager)
@@ -23,6 +22,17 @@ namespace KingsWalletAPI.Service.Implementations
             _mapper = mapper;
             _walletRepo = unitOfwork.GetRepository<Wallet>();
             _userManager = userManager;
+        }
+
+        public async Task<UserReturnDTO> GetUserAsync(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return new UserReturnDTO 
+            { 
+                FullName = user.FullName,
+                Id = user.Id,
+                IsActive = user.IsActive 
+            };
         }
         public async Task<ReturnModel> DeactivateUser(string userId)
         {
@@ -36,7 +46,7 @@ namespace KingsWalletAPI.Service.Implementations
                 return new ReturnModel(false, "User not deactivated");
 
             return new ReturnModel(false, "User Deactivated Successfully");
-        }       
+        }
 
         public async Task<ReturnModel> Register(RegisterDTO model)
         {
@@ -45,7 +55,8 @@ namespace KingsWalletAPI.Service.Implementations
             if (!createUserResult.Success)
                 return new ReturnModel(false, createUserResult.Message);
 
-            var wallet = new Wallet {
+            var wallet = new Wallet
+            {
                 WalletId = RandomGenerator.GenerateWalletId(),
                 UserId = Guid.Parse(createUserResult.Object.ToString())
             };
@@ -58,8 +69,13 @@ namespace KingsWalletAPI.Service.Implementations
                 return new ReturnModel(false, "Internal Db error, registration failed");
             }
 
-            return new ReturnModel(true, "Registration successfully");
-        }   
+            return new ReturnModel(true, "Registration successfully",
+                new UserReturnDTO
+                {
+                    Id = createUserResult.Object.ToString(),
+                    FullName = model.FullName
+                });
+        }
 
         protected async Task<ReturnModel> CreateUserAsync(RegisterDTO model)
         {

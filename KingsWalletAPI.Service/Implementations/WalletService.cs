@@ -32,6 +32,7 @@ namespace KingsWalletAPI.Service.Implementations
             if (!wallet.User.IsActive) return new ReturnModel(false, "Your account has been deactivated.");           
 
             wallet.Balance += model.Amount;
+
             var transaction = new Transaction
             {
                 Amount = model.Amount,
@@ -50,6 +51,7 @@ namespace KingsWalletAPI.Service.Implementations
         public async Task<ReturnModel> PayBills(PayBillDTO model)
         {
             var receiverWallet = _walletRepo.GetSingleByCondition(w => w.WalletId == model.ReceiverWalletId);
+
             var senderWallet = _walletRepo.GetSingleByCondition(w => w.WalletId == model.SenderWalletId);
 
             var validationResult = ValidateTransferCredentials(receiverWallet, senderWallet, model.Amount);
@@ -59,9 +61,9 @@ namespace KingsWalletAPI.Service.Implementations
 
             var listOfAgencies = Converter.ConvertEnumToList(new BillType());
 
-            foreach(var agency in listOfAgencies)
+            foreach(var agency in listOfAgencies as List<string>)
             {                
-                if (receiverWallet.User.FullName == agency.ToString())
+                if (receiverWallet.User.FullName == agency)
                 {
                     await CreateTransactionsForTransfer(receiverWallet, senderWallet, model.Amount);                   
 

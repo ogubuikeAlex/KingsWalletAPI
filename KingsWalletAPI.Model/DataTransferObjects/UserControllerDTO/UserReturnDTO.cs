@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace KingsWalletAPI.Model.DataTransferObjects.UserControllerDTO
 {
-    public class DeactivateDTO
+    public class UserReturnDTO
     {
-       public string UserId { get; set; }
+        public string Id { get; set; }
+        public string FullName{ get; set; }
+
+        public bool IsActive { get; set; }
+        
     }
 }
