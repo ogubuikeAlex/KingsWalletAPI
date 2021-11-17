@@ -20,7 +20,7 @@ namespace KingsWalletAPI.Model.Helpers
             Message = message;
         }
 
-        public ReturnModel(bool success, string message, object _object) : this (success, message)
+        public ReturnModel(bool success, string message, dynamic _object) : this (success, message)
         {
             Object = _object;
         }
@@ -29,7 +29,7 @@ namespace KingsWalletAPI.Model.Helpers
 
         public string Message { get; set; }
 
-        public object Object { get; set; }
+        public dynamic Object { get; set; }
 
     }
 }
